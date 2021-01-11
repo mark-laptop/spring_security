@@ -56,18 +56,18 @@ public class UserController {
     @PostMapping(value = "/admin/update")
     public String updateUser(@ModelAttribute User user) {
         userService.updateUser(user);
-        return "redirect:/user";
+        return "redirect:/admin";
     }
 
     @PostMapping(value = "/admin/create")
     public String createUser(@ModelAttribute User user) {
         userService.saveUser(user);
-        return "redirect:/user";
+        return "redirect:/admin";
     }
 
     @GetMapping(value = "/admin/delete/{id}")
     public String deleteUser(@PathVariable(name = "id") Long id) {
         userService.deleteUser(id);
-        return "redirect:/user";
+        return "redirect:/admin";
     }
 }

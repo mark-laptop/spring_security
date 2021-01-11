@@ -7,7 +7,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.ndg.crudproject.dao.RoleDao;
 import ru.ndg.crudproject.dao.UserDao;
+import ru.ndg.crudproject.exception.RoleNotFoundException;
 import ru.ndg.crudproject.model.Role;
 import ru.ndg.crudproject.model.User;
 
@@ -20,10 +22,13 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+    private final RoleDao roleDao;
+    private static final String USER_ROLE = "ROLE_USER";
 
     @Autowired
-    public UserServiceImpl(UserDao userDao) {
+    public UserServiceImpl(UserDao userDao, RoleDao roleDao) {
         this.userDao = userDao;
+        this.roleDao = roleDao;
     }
 
     @Transactional(readOnly = true)
@@ -41,6 +46,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User saveUser(User user) {
+        Optional<Role> optionalRole = Optional.ofNullable(roleDao.getRoleByName(USER_ROLE));
+        Role role = optionalRole.orElseThrow(() -> new RoleNotFoundException("Not found role by name: " + USER_ROLE));
+        user.getRoles().add(role);
         return userDao.saveUser(user);
     }
 
